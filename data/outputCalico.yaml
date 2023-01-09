@@ -1,0 +1,378 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    scheduler.alpha.kubernetes.io/critical-pod: ""
+  creationTimestamp: "2023-01-09T18:09:18Z"
+  generateName: calico-node-
+  labels:
+    controller-revision-hash: 75bfc6cf6d
+    k8s-app: calico-node
+    pod-template-generation: "1"
+  name: calico-node-g8xm2
+  namespace: kube-system
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: DaemonSet
+    name: calico-node
+    uid: f191e3b5-d0d8-49e2-8961-2067a856f9e3
+  resourceVersion: "9888"
+  uid: a5e3d6d3-8e45-4c09-9ea2-4e61df86f6bc
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchFields:
+          - key: metadata.name
+            operator: In
+            values:
+            - cluster01-control-plane
+  containers:
+  - env:
+    - name: DATASTORE_TYPE
+      value: kubernetes
+    - name: WAIT_FOR_DATASTORE
+      value: "true"
+    - name: NODENAME
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: spec.nodeName
+    - name: CALICO_NETWORKING_BACKEND
+      valueFrom:
+        configMapKeyRef:
+          key: calico_backend
+          name: calico-config
+    - name: CLUSTER_TYPE
+      value: k8s,bgp
+    - name: IP
+      value: autodetect
+    - name: CALICO_IPV4POOL_IPIP
+      value: Always
+    - name: FELIX_IPINIPMTU
+      valueFrom:
+        configMapKeyRef:
+          key: veth_mtu
+          name: calico-config
+    - name: CALICO_IPV4POOL_CIDR
+      value: 10.240.0.0/16
+    - name: CALICO_DISABLE_FILE_LOGGING
+      value: "true"
+    - name: FELIX_DEFAULTENDPOINTTOHOSTACTION
+      value: ACCEPT
+    - name: FELIX_IPV6SUPPORT
+      value: "false"
+    - name: FELIX_LOGSEVERITYSCREEN
+      value: info
+    - name: FELIX_HEALTHENABLED
+      value: "true"
+    image: calico/node:v3.8.9
+    imagePullPolicy: IfNotPresent
+    livenessProbe:
+      exec:
+        command:
+        - /bin/calico-node
+        - -felix-live
+        - -bird-live
+      failureThreshold: 6
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 1
+    name: calico-node
+    readinessProbe:
+      exec:
+        command:
+        - /bin/calico-node
+        - -bird-ready
+        - -felix-ready
+      failureThreshold: 3
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 1
+    resources:
+      requests:
+        cpu: 250m
+    securityContext:
+      privileged: true
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /lib/modules
+      name: lib-modules
+      readOnly: true
+    - mountPath: /run/xtables.lock
+      name: xtables-lock
+    - mountPath: /var/run/calico
+      name: var-run-calico
+    - mountPath: /var/lib/calico
+      name: var-lib-calico
+    - mountPath: /var/run/nodeagent
+      name: policysync
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-kvrjc
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  hostNetwork: true
+  initContainers:
+  - command:
+    - /opt/cni/bin/calico-ipam
+    - -upgrade
+    env:
+    - name: KUBERNETES_NODE_NAME
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: spec.nodeName
+    - name: CALICO_NETWORKING_BACKEND
+      valueFrom:
+        configMapKeyRef:
+          key: calico_backend
+          name: calico-config
+    image: calico/cni:v3.8.9
+    imagePullPolicy: IfNotPresent
+    name: upgrade-ipam
+    resources: {}
+    securityContext:
+      privileged: true
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /var/lib/cni/networks
+      name: host-local-net-dir
+    - mountPath: /host/opt/cni/bin
+      name: cni-bin-dir
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-kvrjc
+      readOnly: true
+  - command:
+    - /install-cni.sh
+    env:
+    - name: CNI_CONF_NAME
+      value: 10-calico.conflist
+    - name: CNI_NETWORK_CONFIG
+      valueFrom:
+        configMapKeyRef:
+          key: cni_network_config
+          name: calico-config
+    - name: KUBERNETES_NODE_NAME
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: spec.nodeName
+    - name: CNI_MTU
+      valueFrom:
+        configMapKeyRef:
+          key: veth_mtu
+          name: calico-config
+    - name: SLEEP
+      value: "false"
+    image: calico/cni:v3.8.9
+    imagePullPolicy: IfNotPresent
+    name: install-cni
+    resources: {}
+    securityContext:
+      privileged: true
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /host/opt/cni/bin
+      name: cni-bin-dir
+    - mountPath: /host/etc/cni/net.d
+      name: cni-net-dir
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-kvrjc
+      readOnly: true
+  - image: calico/pod2daemon-flexvol:v3.8.9
+    imagePullPolicy: IfNotPresent
+    name: flexvol-driver
+    resources: {}
+    securityContext:
+      privileged: true
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /host/driver
+      name: flexvol-driver-host
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-kvrjc
+      readOnly: true
+  nodeName: cluster01-control-plane
+  nodeSelector:
+    beta.kubernetes.io/os: linux
+  preemptionPolicy: PreemptLowerPriority
+  priority: 2000001000
+  priorityClassName: system-node-critical
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: calico-node
+  serviceAccountName: calico-node
+  terminationGracePeriodSeconds: 0
+  tolerations:
+  - effect: NoSchedule
+    operator: Exists
+  - key: CriticalAddonsOnly
+    operator: Exists
+  - effect: NoExecute
+    operator: Exists
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+  - effect: NoSchedule
+    key: node.kubernetes.io/disk-pressure
+    operator: Exists
+  - effect: NoSchedule
+    key: node.kubernetes.io/memory-pressure
+    operator: Exists
+  - effect: NoSchedule
+    key: node.kubernetes.io/pid-pressure
+    operator: Exists
+  - effect: NoSchedule
+    key: node.kubernetes.io/unschedulable
+    operator: Exists
+  - effect: NoSchedule
+    key: node.kubernetes.io/network-unavailable
+    operator: Exists
+  volumes:
+  - hostPath:
+      path: /lib/modules
+      type: ""
+    name: lib-modules
+  - hostPath:
+      path: /var/run/calico
+      type: ""
+    name: var-run-calico
+  - hostPath:
+      path: /var/lib/calico
+      type: ""
+    name: var-lib-calico
+  - hostPath:
+      path: /run/xtables.lock
+      type: FileOrCreate
+    name: xtables-lock
+  - hostPath:
+      path: /opt/cni/bin
+      type: ""
+    name: cni-bin-dir
+  - hostPath:
+      path: /etc/cni/net.d
+      type: ""
+    name: cni-net-dir
+  - hostPath:
+      path: /var/lib/cni/networks
+      type: ""
+    name: host-local-net-dir
+  - hostPath:
+      path: /var/run/nodeagent
+      type: DirectoryOrCreate
+    name: policysync
+  - hostPath:
+      path: /usr/libexec/kubernetes/kubelet-plugins/volume/exec/nodeagent~uds
+      type: DirectoryOrCreate
+    name: flexvol-driver-host
+  - name: kube-api-access-kvrjc
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace
+status:
+  conditions:
+  - lastProbeTime: null
+    lastTransitionTime: "2023-01-09T18:09:40Z"
+    status: "True"
+    type: Initialized
+  - lastProbeTime: null
+    lastTransitionTime: "2023-01-09T18:09:58Z"
+    status: "True"
+    type: Ready
+  - lastProbeTime: null
+    lastTransitionTime: "2023-01-09T18:09:58Z"
+    status: "True"
+    type: ContainersReady
+  - lastProbeTime: null
+    lastTransitionTime: "2023-01-09T18:09:18Z"
+    status: "True"
+    type: PodScheduled
+  containerStatuses:
+  - containerID: containerd://1c526e0a71fb88215deb6ffe2939817275cf3bc4b35dfe4a82f8050cd6953fdc
+    image: docker.io/calico/node:v3.8.9
+    imageID: docker.io/calico/node@sha256:94fec8cfd337e8939b8863cfeeb80e306036659be48163d5dc546ff3d50b0bd6
+    lastState: {}
+    name: calico-node
+    ready: true
+    restartCount: 0
+    started: true
+    state:
+      running:
+        startedAt: "2023-01-09T18:09:54Z"
+  hostIP: 172.18.0.2
+  initContainerStatuses:
+  - containerID: containerd://e20ae93ef93f6e76c5d22a3c8afd4eda5fe7de8861493da743c5e0644a286b98
+    image: docker.io/calico/cni:v3.8.9
+    imageID: docker.io/calico/cni@sha256:ef4fc1ebb9292b358290fe3eb506e502fe99283f4c87229d8e2c287884fb6dba
+    lastState: {}
+    name: upgrade-ipam
+    ready: true
+    restartCount: 0
+    state:
+      terminated:
+        containerID: containerd://e20ae93ef93f6e76c5d22a3c8afd4eda5fe7de8861493da743c5e0644a286b98
+        exitCode: 0
+        finishedAt: "2023-01-09T18:09:34Z"
+        reason: Completed
+        startedAt: "2023-01-09T18:09:34Z"
+  - containerID: containerd://6842c909f4e7e842f0d95a34bf963c0788dbeaef7224adce57e8a760625ced2f
+    image: docker.io/calico/cni:v3.8.9
+    imageID: docker.io/calico/cni@sha256:ef4fc1ebb9292b358290fe3eb506e502fe99283f4c87229d8e2c287884fb6dba
+    lastState: {}
+    name: install-cni
+    ready: true
+    restartCount: 0
+    state:
+      terminated:
+        containerID: containerd://6842c909f4e7e842f0d95a34bf963c0788dbeaef7224adce57e8a760625ced2f
+        exitCode: 0
+        finishedAt: "2023-01-09T18:09:35Z"
+        reason: Completed
+        startedAt: "2023-01-09T18:09:35Z"
+  - containerID: containerd://b614d6e369b1bcf9abce4b9f48657a8f6a05b3b703bd83b579b55f0bb0cda389
+    image: docker.io/calico/pod2daemon-flexvol:v3.8.9
+    imageID: docker.io/calico/pod2daemon-flexvol@sha256:78120ccd9f2e9877a8cf8aa6af4ca4b9c4bc5d0faddc95cb4ccf976107d49ea4
+    lastState: {}
+    name: flexvol-driver
+    ready: true
+    restartCount: 0
+    state:
+      terminated:
+        containerID: containerd://b614d6e369b1bcf9abce4b9f48657a8f6a05b3b703bd83b579b55f0bb0cda389
+        exitCode: 0
+        finishedAt: "2023-01-09T18:09:40Z"
+        reason: Completed
+        startedAt: "2023-01-09T18:09:40Z"
+  phase: Running
+  podIP: 172.18.0.2
+  podIPs:
+  - ip: 172.18.0.2
+  qosClass: Burstable
+  startTime: "2023-01-09T18:09:18Z"
