@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: name-virtual-host-ingress
+spec:
+  rules:
+  - host: foobar.com
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: webserver
+            port:
+              number: 80
+  - host: es.foobar.com
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: elastic
+            port:
+              number: 9200-9300
