@@ -22,12 +22,6 @@ nodes:
     containerPath: /var/run/docker.sock
   - hostPath: /usr/src
     containerPath: /usr/src
-  kubeadmConfigPatches:
-  - |
-    kind: InitConfiguration
-    nodeRegistration:
-      kubeletExtraArgs:
-        node-labels: "ingress-ready=true"
 - role: worker
   extraPortMappings:
   - containerPort: 80
