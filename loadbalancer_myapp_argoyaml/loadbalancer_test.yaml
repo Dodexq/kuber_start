@@ -1,33 +1,29 @@
 kind: Pod
 apiVersion: v1
 metadata:
-  name: foo-app
+  name: first-pod
   labels:
     app: http-echo
 spec:
   containers:
   - name: foo-app
-    image: hashicorp/http-echo:0.2.3
-    args:
-    - "-text=foo"
+    image: dodexq/kuber_loadbalancing:v1
 ---
 kind: Pod
 apiVersion: v1
 metadata:
-  name: bar-app
+  name: second-pod
   labels:
     app: http-echo
 spec:
   containers:
   - name: bar-app
-    image: hashicorp/http-echo:0.2.3
-    args:
-    - "-text=bar"
+    image: dodexq/kuber_loadbalancing:v1
 ---
 kind: Service
 apiVersion: v1
 metadata:
-  name: foo-service
+  name: loadbalancer-service
 spec:
   type: LoadBalancer
   selector:
