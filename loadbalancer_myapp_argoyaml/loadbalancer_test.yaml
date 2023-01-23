@@ -8,6 +8,9 @@ spec:
   containers:
   - name: foo-app
     image: dodexq/kuber_loadbalancing:v1
+    ports:
+      - name: http
+        containerPort: 80
 ---
 kind: Pod
 apiVersion: v1
@@ -19,6 +22,9 @@ spec:
   containers:
   - name: bar-app
     image: dodexq/kuber_loadbalancing:v1
+    ports:
+      - name: http
+        containerPort: 80
 ---
 kind: Service
 apiVersion: v1
@@ -30,7 +36,6 @@ spec:
   ports:
   # Default port used by the image
   - port: 80
-    targetPort: 4545
   type: LoadBalancer
 
 
