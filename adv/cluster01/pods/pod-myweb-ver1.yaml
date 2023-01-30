@@ -3,6 +3,7 @@ kind: Pod
 metadata:
   name: my-web
 spec:
+  hostNetwork: true
   containers:
     - name: container-apache
       image: dodexq/myk8sapp
