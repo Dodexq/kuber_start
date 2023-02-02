@@ -16,6 +16,8 @@ kind: Service
 apiVersion: v1
 metadata:
   name: foo-service
+  labels:
+    app: foo-s
 spec:
   selector:
     app: foo
@@ -42,6 +44,8 @@ kind: Service
 apiVersion: v1
 metadata:
   name: bar-service
+  labels:
+    app: bar-s
 spec:
   selector:
     app: bar
@@ -55,35 +59,25 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: example-ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+  labels:
+    app: ingress
 spec:
   rules:
   - http:
       paths:
       - pathType: Prefix
-        path: "/foo"
+        path: /foo
         backend:
           service:
             name: foo-service
             port:
               number: 80
       - pathType: Prefix
-        path: "/bar"
+        path: /bar
         backend:
           service:
             name: bar-service
             port:
               number: 80
----
-kind: Service
-apiVersion: v1
-metadata:
-  name: loadbalancer-service
-spec:
-  selector:
-    app: example-ingress
-  ports:
-  # Default port used by the image
-  - port: 4545
-    targetPort: 80
-  type: LoadBalancer
-
