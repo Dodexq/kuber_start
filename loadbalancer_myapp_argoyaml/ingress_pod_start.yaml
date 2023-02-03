@@ -65,3 +65,16 @@ spec:
             name: bar-service
             port:
               number: 80
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: loadbalancer-service
+spec:
+  selector:
+    app: http-echo
+  ports:
+  # Default port used by the image
+  - port: 4545
+    targetPort: 80
+  type: LoadBalancer

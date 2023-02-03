@@ -444,6 +444,8 @@ spec:
         - --validating-webhook-key=/usr/local/certificates/key
         - --watch-ingress-without-class=true
         - --publish-status-address=localhost
+        - --http-port=1180
+        - --https-port=11443
         env:
         - name: POD_NAME
           valueFrom:
