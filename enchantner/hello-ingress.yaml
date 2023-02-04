@@ -51,6 +51,7 @@ kind: Ingress
 metadata:
   name: example-ingress
 spec:
+  ingressClassName: nginx
   rules:
   - http:
       paths:

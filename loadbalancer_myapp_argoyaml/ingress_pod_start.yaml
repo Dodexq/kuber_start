@@ -1,13 +1,13 @@
 kind: Pod
 apiVersion: v1
 metadata:
-  name: first-pod
+  name: foo-app
   labels:
     app: foo
 spec:
   containers:
-  - name: kuber
-    image: dodexq/kuber_loadbalancing:v1
+  - name: foo-app
+    image: dodexq/kuber_loadbalancing:v2
 ---
 kind: Service
 apiVersion: v1
@@ -22,13 +22,13 @@ spec:
 kind: Pod
 apiVersion: v1
 metadata:
-  name: second-pod
+  name: bar-app
   labels:
     app: bar
 spec:
   containers:
-  - name: kuber
-    image: dodexq/kuber_loadbalancing:v1
+  - name: bar-app
+    image: dodexq/kuber_loadbalancing:v2
 ---
 kind: Service
 apiVersion: v1
@@ -44,21 +44,25 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: example-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
 spec:
+  ingressClassName: nginx
   rules:
   - http:
       paths:
       - pathType: Prefix
-        path: /foo(/|$)(.*)
+        path: /foo
         backend:
           service:
             name: foo-service
             port:
               number: 80
       - pathType: Prefix
-        path: /bar(/|$)(.*)
+        path: /bar
         backend:
           service:
             name: bar-service
             port:
               number: 80
+---
