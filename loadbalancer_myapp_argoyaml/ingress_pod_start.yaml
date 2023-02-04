@@ -44,8 +44,6 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: example-ingress
-  labels:
-    app: example-ingress
 spec:
   rules:
   - http:

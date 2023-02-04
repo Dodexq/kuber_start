@@ -377,7 +377,7 @@ spec:
     app.kubernetes.io/component: controller
     app.kubernetes.io/instance: ingress-nginx
     app.kubernetes.io/name: ingress-nginx
-  type: NodePort
+  type: LoadBalancer
 ---
 apiVersion: v1
 kind: Service
@@ -443,7 +443,7 @@ spec:
         - --validating-webhook-certificate=/usr/local/certificates/cert
         - --validating-webhook-key=/usr/local/certificates/key
         - --watch-ingress-without-class=true
-        - --publish-status-address=localhost
+        - --publish-status-address=172.18.0.150
         env:
         - name: POD_NAME
           valueFrom:
