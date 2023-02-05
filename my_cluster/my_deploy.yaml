@@ -7,9 +7,7 @@ metadata:
 spec:
   containers:
   - name: foo-app
-    image: hashicorp/http-echo:0.2.3
-    args:
-    - "-text=foo"
+    image: dodexq/kuber_loadbalancing:v2
 ---
 kind: Service
 apiVersion: v1
@@ -19,8 +17,7 @@ spec:
   selector:
     app: foo
   ports:
-  # Default port used by the image
-  - port: 5678
+  - port: 80
 ---
 kind: Pod
 apiVersion: v1
@@ -31,9 +28,7 @@ metadata:
 spec:
   containers:
   - name: bar-app
-    image: hashicorp/http-echo:0.2.3
-    args:
-    - "-text=bar"
+    image: dodexq/kuber_loadbalancing:v2
 ---
 kind: Service
 apiVersion: v1
@@ -43,29 +38,31 @@ spec:
   selector:
     app: bar
   ports:
-  # Default port used by the image
-  - port: 5678
+  - port: 80
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: example-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
 spec:
+  ingressClassName: nginx
   rules:
   - http:
       paths:
       - pathType: Prefix
-        path: "/foo"
+        path: /foo
         backend:
           service:
             name: foo-service
             port:
-              number: 5678
+              number: 80
       - pathType: Prefix
-        path: "/bar"
+        path: /bar
         backend:
           service:
             name: bar-service
             port:
-              number: 5678
+              number: 80
 ---

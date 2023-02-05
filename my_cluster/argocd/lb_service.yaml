@@ -1,0 +1,10 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: argocd-loadbalancer
+spec:
+  selector:
+    app: argocd-server
+  ports:
+  - port: 80
+  type: LoadBalancer
