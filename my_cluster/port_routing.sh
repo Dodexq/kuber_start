@@ -1,5 +1,5 @@
 #!/bin/bash
-sudo iptables -t nat -A PREROUTING -p tcp --dport 4545 -j DNAT --to-destination 172.18.0.150:4545
+sudo iptables -t nat -A PREROUTING -p tcp --dport 4545 -j DNAT --to-destination 172.18.0.150:1080
 sudo iptables -t nat -A POSTROUTING -j MASQUERADE
 
 # or

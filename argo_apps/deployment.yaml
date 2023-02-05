@@ -1,19 +1,38 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: myapp-deployment
+  name: kuber
+  labels:
+    app: kuber
 spec:
+  replicas: 3
+  minReadySeconds: 10
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
   selector:
     matchLabels:
-      app: myapp
-  replicas: 2
+      app: http-server-1
   template:
     metadata:
       labels:
-        app: myapp
+        app: http-server-1
     spec:
       containers:
         - name: myapp
-          image: dodexq/myk8sapp:latest
+          image: dodexq/kuber_loadbalancing:v2
           ports:
             - containerPort: 80
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: foo-service
+spec:
+  selector:
+    app: http-server-1
+  ports:
+  - port: 80
