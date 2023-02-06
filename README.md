@@ -5,3 +5,4 @@
 3) create namespaces and apply Metallb: `sudo kubectl apply -f ./my_cluster/metallb/namespace.yaml && sudo kubectl apply -f ./my_cluster/metallb/namespace.yaml/metallb.yaml`
 4) apply `sudo kubectl apply -f ./my_cluster/metallb/metallb-config.yaml` after configure ip addr (pool can be see use sh: `./my_cluster/metallb/get_docker_network.sh`)
 5) apply ingress `sudo kubectl apply -f ./my_cluster/ingress-deploy.yaml`
+6) apply my deployment and ingress url redirect `sudo kubectl apply -f ./my_cluster/ingress_deployment_start.yaml`
