@@ -24,8 +24,22 @@ spec:
       containers:
         - name: myapp
           image: dodexq/kuber_loadbalancing:v2
+          # command:
+          # - /bin/sh
+          # - "-c"
+          # - "touch /tmp/healthy"
           ports:
-            - containerPort: 80
+          - containerPort: 80
+          livenessProbe:
+            exec:
+              command:
+              - cat
+              - /var/www/html/index.php
+            initialDelaySeconds: 1
+            periodSeconds: 5
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 3
 ---
 kind: Service
 apiVersion: v1
@@ -82,7 +96,7 @@ metadata:
   name: example-ingress
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /$1
-    #nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    # nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
     #nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
   ingressClassName: nginx
