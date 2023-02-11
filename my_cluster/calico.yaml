@@ -491,10 +491,10 @@ spec:
         # marks the pod as a critical add-on, ensuring it gets
         # priority scheduling and that its resources are reserved
         # if it ever gets evicted.
-        scheduler.alpha.kubernetes.io/critical-pod: ''
+        priorityClassName: ''
     spec:
       nodeSelector:
-        beta.kubernetes.io/os: linux
+        kubernetes.io/os: linux
       hostNetwork: true
       tolerations:
         # Make sure calico-node gets scheduled on all nodes.
@@ -622,7 +622,7 @@ spec:
             # chosen from this range. Changing this value after installation will have
             # no effect. This should fall within `--cluster-cidr`.
             - name: CALICO_IPV4POOL_CIDR
-              value: "10.240.0.0/16"
+              value: "10.244.0.0/16"
             # Disable file logging so `kubectl logs` works.
             - name: CALICO_DISABLE_FILE_LOGGING
               value: "true"
@@ -745,10 +745,10 @@ spec:
       labels:
         k8s-app: calico-kube-controllers
       annotations:
-        scheduler.alpha.kubernetes.io/critical-pod: ''
+        priorityClassName: ''
     spec:
       nodeSelector:
-        beta.kubernetes.io/os: linux
+        kubernetes.io/os: linux
       tolerations:
         # Mark the pod as a critical add-on for rescheduling.
         - key: CriticalAddonsOnly
@@ -779,11 +779,3 @@ kind: ServiceAccount
 metadata:
   name: calico-kube-controllers
   namespace: kube-system
----
-# Source: calico/templates/calico-etcd-secrets.yaml
-
----
-# Source: calico/templates/calico-typha.yaml
-
----
-# Source: calico/templates/configure-canal.yaml
