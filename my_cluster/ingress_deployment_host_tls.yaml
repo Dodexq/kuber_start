@@ -100,29 +100,24 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: example-ingress
-  annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /$1
 spec:
   ingressClassName: nginx
   rules:
-  - http:
+  - host: foo.dodex.site
+    http:
       paths:
       - pathType: Prefix
         path: /
         backend:
           service:
-            name: argocd-server
-            port:
-              number: 80
-      - pathType: Prefix
-        path: /foo
-        backend:
-          service:
             name: foo-service
             port:
               number: 80
+  - host: bar.dodex.site
+    http:
+      paths:
       - pathType: Prefix
-        path: /bar
+        path: /
         backend:
           service:
             name: bar-service
