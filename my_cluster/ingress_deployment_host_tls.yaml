@@ -26,16 +26,16 @@ spec:
           image: dodexq/kuber_loadbalancing:v2
           ports:
           - containerPort: 80
-          # livenessProbe:
-          #   exec:
-          #     command:
-          #     - cat
-          #     - /var/www/html/index.php
-          #   initialDelaySeconds: 0
-          #   periodSeconds: 5
-          #   timeoutSeconds: 1
-          #   successThreshold: 1
-          #   failureThreshold: 3
+          livenessProbe:
+            exec:
+              command:
+              - cat
+              - /var/www/html/index.php
+            initialDelaySeconds: 0
+            periodSeconds: 5
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 3
 ---
 kind: Service
 apiVersion: v1
@@ -75,16 +75,16 @@ spec:
           image: dodexq/kuber_loadbalancing:v2
           ports:
             - containerPort: 80
-          # livenessProbe:
-          #   exec:
-          #     command:
-          #     - cat
-          #     - /var/www/html/index.php
-          #   initialDelaySeconds: 0
-          #   periodSeconds: 5
-          #   timeoutSeconds: 1
-          #   successThreshold: 1
-          #   failureThreshold: 3
+          livenessProbe:
+            exec:
+              command:
+              - cat
+              - /var/www/html/index.php
+            initialDelaySeconds: 0
+            periodSeconds: 5
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 3
 ---
 kind: Service
 apiVersion: v1
@@ -108,6 +108,7 @@ spec:
   - hosts:
     - foo.dodex.site
     - bar.dodex.site
+    - argocd.dodex.site
     secretName: app-tls
   rules:
   - host: foo.dodex.site
@@ -130,4 +131,14 @@ spec:
             name: bar-service
             port:
               number: 80
+  - host: argocd.dodex.site
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend: 
+          service:
+            name: argocd-server
+            port:
+              number: 443
 ---
