@@ -100,8 +100,15 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: example-ingress
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   ingressClassName: nginx
+  tls:
+  - hosts:
+    - foo.dodex.site
+    - bar.dodex.site
+    secretName: app-tls
   rules:
   - host: foo.dodex.site
     http:
