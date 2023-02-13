@@ -365,12 +365,12 @@ spec:
   ports:
   - appProtocol: http
     name: http
-    port: 80
+    port: 1080
     protocol: TCP
     targetPort: http
   - appProtocol: https
     name: https
-    port: 443
+    port: 10443
     protocol: TCP
     targetPort: https
   selector:
