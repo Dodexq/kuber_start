@@ -102,17 +102,16 @@ metadata:
   name: example-ingress
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
-    nginx.ingress.kubernetes.io/backend-protocol: HTTPS
-    nginx.ingress.kubernetes.io/configuration-snippet: |-
-      proxy_ssl_server_name on;
-      proxy_ssl_name $host;
+    # nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+    # nginx.ingress.kubernetes.io/configuration-snippet: |-
+    #   proxy_ssl_server_name on;
+    #   proxy_ssl_name $host;
 spec:
   ingressClassName: nginx
   tls:
   - hosts:
     - foo.dodex.site
     - bar.dodex.site
-    - argocd.dodex.site
     - board.dodex.site
     secretName: app-tls
   rules:
@@ -134,16 +133,6 @@ spec:
         backend:
           service:
             name: bar-service
-            port:
-              number: 80
-  - host: argocd.dodex.site
-    http:
-      paths:
-      - pathType: Prefix
-        path: /
-        backend: 
-          service:
-            name: argocd-server
             port:
               number: 80
   - host: board.dodex.site

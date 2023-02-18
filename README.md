@@ -8,6 +8,7 @@
 6) apply cert-manager `kubectl apply -f ./my_cluster/cert-manager/cert-manager.yaml`
 7) in folder `./my_cluster/cert-manager/acme-prod.yaml` & `./my_cluster/cert-manager/acme-staging.yaml` - for testing
 8) apply my deployment and ingress url redirect `kubectl apply -f ./my_cluster/ingress_deployment_host_tls.yaml`
+9) apply argocd ingress svc `kubectl apply -f ./my_cluster/ingress_argocd_svc.yaml`
 
 #
 
