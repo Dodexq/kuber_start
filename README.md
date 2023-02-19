@@ -23,3 +23,11 @@
 </p>
 
 #
+
+#
+
+<p align="center"> 
+<a href="https://raw.githubusercontent.com/Dodexq/kuber_start/main/screenshots/host_foo.png" rel="some text"><img src="https://raw.githubusercontent.com/Dodexq/kuber_start/main/screenshots/argocd_screen01.png" alt="" width="500" /></a>
+</p>
+
+#
