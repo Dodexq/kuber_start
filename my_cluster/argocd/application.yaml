@@ -6,7 +6,7 @@ metadata:
   name: foo-bar-application
   namespace: default
 spec:
-  project: default
+  project: foo-bar
   source:
     repoURL: https://github.com/dodexq/kuber_start.git
     targetRevision: HEAD
@@ -27,9 +27,9 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-options: Validate=false
   name: argocd-application
-  namespace: default
+  namespace: argocd
 spec:
-  project: default
+  project: argocd
   source:
     repoURL: https://github.com/dodexq/kuber_start.git
     targetRevision: HEAD
