@@ -3,17 +3,40 @@ kind: Application
 metadata:
   annotations:
     argocd.argoproj.io/sync-options: Validate=false
-  name: myapp-argo-application
-  namespace: argocd
+  name: foo-bar-application
+  namespace: default
 spec:
   project: default
   source:
     repoURL: https://github.com/dodexq/kuber_start.git
     targetRevision: HEAD
-    path: my_cluster
+    path: argo_apps
   destination:
     server: https://kubernetes.default.svc
-    namespace: argocd
+    namespace: default
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true
+    automated:
+      selfHeal: true
+      prune: true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-options: Validate=false
+  name: argocd-application
+  namespace: default
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/dodexq/kuber_start.git
+    targetRevision: HEAD
+    path: argo_apps
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: default
   syncPolicy:
     syncOptions:
     - CreateNamespace=true
